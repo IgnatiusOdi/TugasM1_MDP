@@ -109,7 +109,6 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     hasil.toString()
                 }
-                break
             }
         }
     }
@@ -146,6 +145,7 @@ class MainActivity : AppCompatActivity() {
     private fun cekPlus():Boolean {
         for (i in 0 until buttons.size) {
             if (buttons[i].text == "+") {
+                // ADA +
                 return true
             }
         }
