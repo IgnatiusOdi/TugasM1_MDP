@@ -2,6 +2,7 @@ package com.example.tugas
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -34,9 +35,9 @@ class MainActivity : AppCompatActivity() {
         etNama = findViewById(R.id.etNama)
         btPlay = findViewById(R.id.btPlay)
 
-        btRandom.setOnClickListener {
-            randomAngka()
-        }
+//        btRandom.setOnClickListener {
+//            randomAngka()
+//        }
 
         btPlay.setOnClickListener {
             if (btPlay.text == "PLAY") {
@@ -62,6 +63,10 @@ class MainActivity : AppCompatActivity() {
                                 randomAngka()
                             } else {
                                 Toast.makeText(this@MainActivity, "BUTTON TIDAK KOSONG!", Toast.LENGTH_SHORT).show()
+                            }
+                            if (cekPlus()) {
+                                // CEK APAKAH ADA TANDA + DI BUTTON
+                                doTambah()
                             }
                             if (isGameOver()) {
                                 Toast.makeText(this@MainActivity, "GAME OVER!\n$nama - $score", Toast.LENGTH_SHORT).show()
@@ -91,6 +96,60 @@ class MainActivity : AppCompatActivity() {
         } else {
             btRandom.text = "+"
         }
+    }
+
+    private fun doTambah() {
+        for (i in 0 until buttons.size) {
+            // CARI POSISI +
+            if (buttons[i].text == "+") {
+                // CARI INDEX + UNTUK RECURSIVE
+                var hasil = plusRec(i, 0, 1)
+                buttons[i].text = if (hasil == 0) {
+                    "+"
+                } else {
+                    hasil.toString()
+                }
+                break
+            }
+        }
+    }
+
+    private fun plusRec(i:Int, temp:Int, depth:Int): Int {
+        var before = if (i - depth < 0) {
+            (i - depth) + buttons.size
+        } else {
+            i - depth
+        }
+        var after = if (i + depth >= buttons.size) {
+            i + depth - (buttons.size - 1)
+        } else {
+            i + depth
+        }
+
+//        Log.d("Before", "$before")
+//        Log.d("After", "$after")
+
+        if (buttons[before].text.isBlank() || buttons[before].text == "+" || buttons[after].text.isBlank() || buttons[after].text == "+" || buttons[before].text != buttons[after].text || before == after) {
+//            Log.d("Temp", "$temp")
+            return temp
+        }
+
+        var jumlah = temp + buttons[before].text.toString().toInt() + buttons[after].text.toString().toInt()
+        buttons[before].setBackgroundColor(resources.getColor(R.color.gray))
+        buttons[before].text = ""
+        buttons[after].setBackgroundColor(resources.getColor(R.color.gray))
+        buttons[after].text = ""
+//        Log.d("Jumlah - Depth", "$jumlah - $depth")
+        return plusRec(i, jumlah, depth + 1)
+    }
+
+    private fun cekPlus():Boolean {
+        for (i in 0 until buttons.size) {
+            if (buttons[i].text == "+") {
+                return true
+            }
+        }
+        return false
     }
 
     private fun isGameOver(): Boolean {
